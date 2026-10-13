@@ -1,0 +1,21 @@
+{
+  "name": "pdf-merger",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local Windows PDF merger. Files stay in the browser.",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test",
+    "test:ui": "playwright test",
+    "vendor": "node scripts/vendor.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.55.1",
+    "pdf-lib": "1.17.1",
+    "pdfjs-dist": "4.10.38"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
