@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PDF Merger</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a class="skip" href="#binder">Skip to pages</a>
+  <noscript>
+    <p>PDF Merger needs JavaScript. The page still runs only on this computer.</p>
+  </noscript>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+          <rect x="5" y="9" width="16" height="18" rx="1.5" fill="var(--paper)" stroke="currentColor" stroke-width="1.5"></rect>
+          <rect x="11" y="5" width="16" height="18" rx="1.5" fill="var(--green)"></rect>
+          <path d="M15 11h8M15 15h8M15 19h5" stroke="var(--green-ink)" stroke-width="1.5" stroke-linecap="round"></path>
+        </svg>
+        <div class="brand-text">
+          <h1>PDF Merger</h1>
+          <p class="privacy">Your PDFs stay in this browser tab. They are not uploaded.</p>
+        </div>
+      </div>
+      <form id="export-form" class="export-form">
+        <div class="field">
+          <label for="export-name">File name</label>
+          <input id="export-name" name="export-name" type="text" value="merged.pdf" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="export-actions">
+          <button id="export-button" type="submit" disabled>Export PDF</button>
+          <button id="export-options" type="button" disabled aria-haspopup="menu" aria-expanded="false" aria-controls="export-menu">
+            <span class="visually-hidden">Export options</span>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <div id="export-menu" class="export-menu" role="menu" aria-label="Export options" hidden>
+            <button id="export-compressed" type="button" role="menuitem">
+              <span class="menu-title">Export compressed</span>
+              <span class="menu-note">Smaller file. Each page is saved as a picture, so text cannot be selected.</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </header>
+
+    <div class="workspace">
+      <aside class="sources" aria-labelledby="sources-heading">
+        <div class="sources-head">
+          <h2 id="sources-heading">Files</h2>
+          <p class="sources-note">Original files stay where they are.</p>
+        </div>
+        <label class="file-button">
+          Add PDFs
+          <input id="file-input" type="file" accept="application/pdf,.pdf" multiple>
+        </label>
+        <div class="file-scroll">
+          <p id="file-empty" class="file-empty">No files yet.</p>
+          <ul id="file-list" class="file-list"></ul>
+        </div>
+        <div class="sources-foot">
+          <button id="clear-button" class="text-button" type="button">Clear workspace</button>
+          <details class="help">
+            <summary>How to arrange pages</summary>
+            <ul>
+              <li>Drag a page preview to reorder. Selected pages move together.</li>
+              <li>Delete takes a page out of the export. The original file is left as it is.</li>
+              <li>Rotate turns a page clockwise in the preview and in the export.</li>
+              <li>Export options can write a smaller file. Scanned pages shrink the most. Text in that copy is part of the picture.</li>
+              <li>Undo and Redo cover page edits. Ctrl+Z undoes. Ctrl+Y redoes.</li>
+              <li>Removing a file or clearing the workspace also clears undo.</li>
+            </ul>
+          </details>
+        </div>
+      </aside>
+
+      <main id="binder" class="binder">
+        <div class="binder-head">
+          <div class="binder-title">
+            <h2 id="binder-heading">Pages</h2>
+            <p id="binder-summary">No pages yet.</p>
+          </div>
+          <div class="toolbar" role="toolbar" aria-label="Page actions">
+            <div class="tool-group">
+              <button type="button" id="undo-button">Undo</button>
+              <button type="button" id="redo-button">Redo</button>
+            </div>
+            <div class="tool-group">
+              <button type="button" id="select-all-button">Select all</button>
+            </div>
+            <div class="tool-group">
+              <button type="button" id="rotate-selected-button">Rotate selected</button>
+              <button type="button" id="move-earlier-button">Move earlier</button>
+              <button type="button" id="move-later-button">Move later</button>
+            </div>
+            <div class="tool-group tool-group-danger">
+              <button type="button" id="delete-selected-button">Delete selected</button>
+            </div>
+          </div>
+        </div>
+        <div id="status" class="status" role="status">Add PDFs to start. Nothing leaves this computer.</div>
+        <div id="errors" class="errors" role="alert"></div>
+        <div id="empty" class="empty">
+          <svg class="empty-mark" viewBox="0 0 88 104" aria-hidden="true">
+            <rect x="22" y="12" width="52" height="70" rx="2" fill="#fff" stroke="currentColor" stroke-width="1.5"></rect>
+            <rect x="12" y="22" width="52" height="70" rx="2" fill="var(--paper)" stroke="currentColor" stroke-width="1.5"></rect>
+            <path d="M24 44h28M24 54h28M24 64h16" stroke="var(--green)" stroke-width="1.75" stroke-linecap="round"></path>
+          </svg>
+          <h3>Drop PDFs here</h3>
+          <p>Add one or more files. Reorder or delete any pages, then export a single PDF.</p>
+        </div>
+        <ol id="page-list" class="page-list" aria-labelledby="binder-heading" aria-describedby="binder-summary"></ol>
+      </main>
+    </div>
+  </div>
+
+  <div id="drop-overlay" class="drop-overlay" hidden>
+    <p>Drop PDFs to add them to the binder</p>
+  </div>
+
+  <div id="confirm" class="confirm" hidden>
+    <div class="confirm-panel" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-text" tabindex="-1">
+      <h2 id="confirm-title">Clear the workspace?</h2>
+      <p id="confirm-text">This removes every file and page from the binder.</p>
+      <div class="confirm-actions">
+        <button type="button" id="confirm-cancel">Keep working</button>
+        <button type="button" id="confirm-ok">Clear everything</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
